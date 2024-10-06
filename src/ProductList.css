@@ -162,7 +162,9 @@ body {
 }
 .cart{
     color: white;
-    display: flex;
+    /* display: flex; */
+    position: relative;
+    display: inline-block;
 }
 .cart_quantity_count{
     margin-top: 16px;
@@ -249,4 +251,16 @@ body {
       .ul div {
         text-align: center; /* Align text to the center */
       }
+  }
+
+  .product-button.added {
+    background-color: orange;
+    cursor: not-allowed;
+  }
+
+  .item-count {
+    position: absolute;
+    color: black;
+    font-weight: bold;
+   
   }

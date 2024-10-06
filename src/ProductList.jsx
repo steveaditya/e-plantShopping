@@ -8,7 +8,12 @@ function ProductList() {
     const cartItems = useSelector((state) => state.cart.items);
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-    const [addedToCart, setAddedtoCart] = useState({});
+    //const [addedToCart, setAddedtoCart] = useState({});
+
+    const totalItemsInCart = cartItems.reduce(
+        (total, item) => total + item.quantity,
+        0
+      );
 
     const plantsArray = [
         {
@@ -242,13 +247,53 @@ function ProductList() {
         setShowCart(true);
         setShowPlants(false); // Set showCart to true when cart icon is clicked
     };
-    const handleAddToCart = (product) => {
-        dispatch(addItem(product));
-        setAddedtoCart((prevState => ({
-            ...prevState,
-            [product.name]: true,
-        })));
-    }
+    // const handleAddToCart = (product) => {
+    //     dispatch(addItem(product));
+    //     setAddedtoCart((prevState => ({
+    //         ...prevState,
+    //         [product.name]: true,
+    //     })));
+    // }
+
+    const handleAddToCart = (plantCategoryIndex, plantIndex) => {
+        const plant = plantsArray[plantCategoryIndex].plants[plantIndex];
+        dispatch(addItem(plant));
+    
+        // Update the button state immutably
+        setPlantsArray((prevPlantsArray) => {
+          return prevPlantsArray.map((category, catIndex) => {
+            if (catIndex === plantCategoryIndex) {
+              return {
+                ...category,
+                plants: category.plants.map((p, pIndex) => {
+                  if (pIndex === plantIndex) {
+                    return { ...p, added: true };
+                  }
+                  return p;
+                }),
+              };
+            }
+            return category;
+          });
+        });
+      };
+
+    const handleRemoveFromCart = (removedItem) => {
+        setPlantsArray((prevPlantsArray) => {
+          return prevPlantsArray.map((category) => {
+            return {
+              ...category,
+              plants: category.plants.map((plant) => {
+                if (plant.name === removedItem.name) {
+                  return { ...plant, added: false };
+                }
+                return plant;
+              }),
+            };
+          });
+        });
+      };
+
     const handlePlantsClick = (e) => {
         e.preventDefault();
         setShowPlants(true); // Set showAboutUs to true when "About Us" link is clicked
@@ -257,6 +302,7 @@ function ProductList() {
 
     const handleContinueShopping = (e) => {
         e.preventDefault();
+        setShowPlants(true);
         setShowCart(false);
     };
     return (
@@ -276,10 +322,10 @@ function ProductList() {
                 </div>
                 <div style={styleObjUl}>
                     <div>
-                        <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>Plants</a>
+                        <a href="#" onClick={handlePlantsClick} style={styleA}>Plants</a>
                     </div>
                     <div>
-                        <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
+                        <a href="#" onClick={handleCartClick} style={styleA}>
                             <div className='cart'>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68">
                                     <rect width="156" height="156" fill="none"></rect>
@@ -324,7 +370,10 @@ function ProductList() {
 
                 </div>
             ) : (
-                <CartItem onContinueShopping={handleContinueShopping} />
+                <CartItem
+                 onRemoveFromCart={handleRemoveFromCart}
+                 onContinueShopping={handleContinueShopping} />
+
             )}
         </div>
     );
