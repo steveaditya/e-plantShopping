@@ -15,7 +15,7 @@ function ProductList() {
         0
     );
 
-    const plantsArray = [
+    const plantsArray = useState([
         {
             category: "Air Purifying Plants",
             plants: [
@@ -251,7 +251,7 @@ function ProductList() {
                 }
             ]
         }
-    ];
+    ]);
     const styleObj = {
         backgroundColor: '#4CAF50',
         color: '#fff!important',
