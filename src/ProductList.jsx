@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import './ProductList.css'
-import addItem from './CartSlice'
+import { addItem } from './CartSlice'
 import CartItem from './CartItem';
 function ProductList() {
     const dispatch = useDispatch();
     const cartItems = useSelector((state) => state.cart.items);
     const [showCart, setShowCart] = useState(false);
-    const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-    //const [addedToCart, setAddedtoCart] = useState({});
+    const [showPlants, setShowPlants] = useState(false);
 
     const totalItemsInCart = cartItems.reduce(
         (total, item) => total + item.quantity,
         0
     );
 
-    const plantsArray = useState([
+    const [plantsArray, setPlantsArray] = useState([
         {
             category: "Air Purifying Plants",
             plants: [
@@ -277,13 +276,6 @@ function ProductList() {
         setShowCart(true);
         setShowPlants(false); // Set showCart to true when cart icon is clicked
     };
-    // const handleAddToCart = (product) => {
-    //     dispatch(addItem(product));
-    //     setAddedtoCart((prevState => ({
-    //         ...prevState,
-    //         [product.name]: true,
-    //     })));
-    // }
 
     const handleAddToCart = (plantCategoryIndex, plantIndex) => {
         const plant = plantsArray[plantCategoryIndex].plants[plantIndex];
@@ -354,7 +346,7 @@ function ProductList() {
                     </div>
                     <div>
                         <a href="#" onClick={handleCartClick} style={styleA}>
-                            <div className='cart'>
+                            <div className='cart-container'>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68">
                                     <rect width="156" height="156" fill="none"></rect>
                                     <circle cx="80" cy="216" r="12"></circle>
@@ -375,19 +367,21 @@ function ProductList() {
             {!showCart ? (
                 <div className="product-grid">
                     {
-                        plantsArray.map((plantCategory, index) => (
+                        plantsArray.map((plantCategory, categoryIndex) => (
                             <div key={plantCategory.category}>
                                 <h1><div>{plantCategory.category}</div></h1>
                                 <div className="product-list">
                                     {plantCategory.plants.map((plant, plantIndex) => (
                                         <div className='product-card' key={plant.name}>
-                                            <img className="product-image" src={plant.image} alt={plant.name} />
+                                            <img className="product-image"
+                                                src={plant.image}
+                                                alt={plant.name} />
                                             <div className='product-title'>{plant.name}</div>
                                             <div className='product-desc'>{plant.description}</div>
                                             <div className='product-cost'>{plant.cost}</div>
                                             <button
                                                 className={`product-button ${plant.added ? 'added' : ''}`}
-                                                onClick={() => handleAddToCart(index, plantIndex)}
+                                                onClick={() => handleAddToCart(categoryIndex, plantIndex)}
                                                 disabled={plant.added}
                                             >
                                                 {plant.added ? 'Added to Cart' : 'Add to Cart'}

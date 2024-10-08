@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateQuantity } from './CartSlice';
 import './CartItem.css';
@@ -6,6 +6,11 @@ import './CartItem.css';
 const CartItem = ({ onContinueShopping, onRemoveFromCart}) => {
     const cart = useSelector(state => state.cart.items);
     const dispatch = useDispatch();
+
+    const [showCheckout, setShowCheckout] = useState(false);
+    const handleCheckout = () => {
+        setShowCheckout(true);
+      };
 
     // Calculate total amount for all products in the cart
     const calculateTotalAmount = () => {
@@ -34,7 +39,7 @@ const CartItem = ({ onContinueShopping, onRemoveFromCart}) => {
     };
 
     const handleRemove = (item) => {
-        dispatch(removeItem(item.name));
+        dispatch(removeItem(item));
         onRemoveFromCart(item);
     };
 
@@ -43,7 +48,8 @@ const CartItem = ({ onContinueShopping, onRemoveFromCart}) => {
         return (parseFloat(item.cost.slice(1)) * item.quantity).toFixed(2);
     };
 
-    return (
+    return (showCheckout ?
+        <h1 className='checkout-message'>Checkout Succesfull</h1>:
         <div className="cart-container">
             <h2 style={{ color: 'black' }}>Total Cart Amount: ${calculateTotalAmount()}</h2>
             <div>
@@ -54,9 +60,11 @@ const CartItem = ({ onContinueShopping, onRemoveFromCart}) => {
                             <div className="cart-item-name">{item.name}</div>
                             <div className="cart-item-cost">{item.cost}</div>
                             <div className="cart-item-quantity">
-                                <button className="cart-item-button cart-item-button-dec" onClick={() => handleDecrement(item)}>-</button>
+                                <button className="cart-item-button cart-item-button-dec" 
+                                onClick={() => handleDecrement(item)}>-</button>
                                 <span className="cart-item-quantity-value">{item.quantity}</span>
-                                <button className="cart-item-button cart-item-button-inc" onClick={() => handleIncrement(item)}>+</button>
+                                <button className="cart-item-button cart-item-button-inc" 
+                                onClick={() => handleIncrement(item)}>+</button>
                             </div>
                             <div className="cart-item-total">Total: ${calculateTotalCost(item)}</div>
                             <button className="cart-item-delete" onClick={() => handleRemove(item)}>Delete</button>
@@ -68,7 +76,7 @@ const CartItem = ({ onContinueShopping, onRemoveFromCart}) => {
             <div className="continue_shopping_btn">
                 <button className="get-started-button" onClick={onContinueShopping}>Continue Shopping</button>
                 <br />
-                <button className="get-started-button1">Checkout</button>
+                <button className="get-started-button1" onClick={handleCheckout}>Checkout</button>
             </div>
         </div>
     );
